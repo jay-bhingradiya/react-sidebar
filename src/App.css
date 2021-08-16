@@ -1,8 +1,8 @@
-.sidebarContentMain{
-  background-color: white; 
+.sidebarContentMain {
+  background-color: white;
 }
 
-.form-group{
+.form-group {
   display: flex;
   flex-direction: column;
 }
