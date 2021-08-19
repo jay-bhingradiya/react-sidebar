@@ -1,86 +1,84 @@
-import {useState} from 'react';
-import {useEffect} from 'react';
-import FormInput from './FormInput';
+import { useState } from "react";
+import { useEffect } from "react";
+import FormInput from "./FormInput";
 
-const MovieForm = ({addMovie, editMode, editMovie, closeSidebar}) => {
-  const [movieData, setMovieData] = useState ({
-    name: '',
-    rating: '',
+const MovieForm = ({ addMovie, editMode, editMovie, closeSidebar }) => {
+  const [movieData, setMovieData] = useState({
+    name: "",
+    rating: "",
   });
+  const [errors, setErrors] = useState({});
 
-  useEffect (
-    () => {
-      setMovieData ({
-        name: editMode.isOn ? editMode.movie.name : '',
-        rating: editMode.isOn ? editMode.movie.rating : '',
-      });
-    },
-    [editMode]
-  );
-
-  const [errors, setErrors] = useState ({});
+  useEffect(() => {
+    setMovieData({
+      name: editMode.isOn ? editMode.movie.name : "",
+      rating: editMode.isOn ? editMode.movie.rating : "",
+    });
+  }, [editMode]);
 
   const closeHandler = () => {
-    closeSidebar ();
-    setMovieData ({
-      name: '',
-      rating: '',
+    beforeClose();
+    setMovieData({
+      name: "",
+      rating: "",
     });
   };
 
-  const onChangeHandler = e => {
-    setMovieData ({
+  const beforeClose = () => {
+    closeSidebar();
+    setErrors({});
+  };
+
+  const onChangeHandler = (e) => {
+    setMovieData({
       ...movieData,
       [e.target.name]: e.target.value,
     });
 
     let name = e.target.name;
 
-    if (e.target.value === '') {
-      setErrors ({
+    if (e.target.value === "") {
+      setErrors({
         ...errors,
-        [e.target.name]: `Enter Enter Movie${e.target.name}`,
+        [e.target.name]: `Enter Movie ${e.target.name}`,
       });
     } else {
-      let newList = {...errors};
+      let newList = { ...errors };
       delete newList[name];
-      setErrors (newList);
+      setErrors(newList);
     }
   };
 
-  const submitHandler = e => {
-    e.preventDefault ();
+  const submitHandler = (e) => {
+    e.preventDefault();
+
+    if (Object.keys(errors).length !== 0) return;
 
     let err = {};
-
-    if (!movieData.name) err.name = 'Please enter Movie name';
-    if (!movieData.rating) err.rating = 'Please enter Movie rating';
-
-    setErrors (err);
-
-    if (Object.getOwnPropertyNames (err).length !== 0) {
-      return;
-    }
+    if (!movieData.name) err.name = "Enter Movie name";
+    if (!movieData.rating) err.rating = "Enter  Movie rating";
+    setErrors(err);
+    if (Object.getOwnPropertyNames(err).length !== 0) return;
 
     if (editMode.isOn) {
-      editMovie ({
+      editMovie({
         id: editMode.movie.id,
         ...movieData,
       });
     } else {
-      addMovie (movieData);
+      addMovie(movieData);
     }
 
-    setMovieData ({
-      name: '',
-      rating: '',
+    setMovieData({
+      name: "",
+      rating: "",
     });
   };
 
   return (
     <div>
       <h3>Add Movie</h3>
-      <h4>{editMode.isOn ? editMode.movie.name : 'In Add Mode'}</h4>
+      <h4>{editMode.isOn ? editMode.movie.name : "In Add Mode"}</h4>
       <form onSubmit={submitHandler}>
         <FormInput
           label="Movie Name"
@@ -102,7 +100,9 @@ const MovieForm = ({addMovie, editMode, editMovie, closeSidebar}) => {
           step=".01"
         />
         <input type="submit" value="Submit" />
-        <button onClick={closeHandler} type="button">Cancel</button>
+        <button onClick={beforeClose} type="button">
+          Cancel
+        </button>
       </form>
     </div>
   );
